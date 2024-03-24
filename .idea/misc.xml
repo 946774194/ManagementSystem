@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <sourceRoots>
+      <file path="$PROJECT_DIR$/Controller" />
+      <file path="$PROJECT_DIR$/Mapper" />
+      <file path="$PROJECT_DIR$/Service" />
+      <file path="$PROJECT_DIR$/Test" />
+      <file path="$PROJECT_DIR$/Utils" />
+      <file path="$PROJECT_DIR$/file" />
+      <file path="$PROJECT_DIR$/googletest" />
+      <file path="$PROJECT_DIR$/googletest/include" />
+      <file path="$PROJECT_DIR$/googletest/src" />
+      <file path="$PROJECT_DIR$/include" />
+      <file path="$PROJECT_DIR$/init" />
+      <file path="$PROJECT_DIR$/poco" />
+    </sourceRoots>
+  </component>
+</project>
