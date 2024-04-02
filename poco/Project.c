@@ -19,7 +19,7 @@ Project *createProject() {
     return project;
 }
 
-char *projectToString(const Project *project) {
+char *projectToString(const Project *project) { // 与prizeToString类似
     char *str = (char *)malloc(512);
     char *authorsAndAwards = (char *)malloc(DEFAULT_BUFFER_SIZE);
     *authorsAndAwards = '\0';
@@ -71,31 +71,25 @@ void destroyProjectMembers(Project *project) {
 
 Project *readProject(FILE *fp) {
     Project *project = createProject();
-    fscanf(fp, "%d", &project->id);
-    project->teacher = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", project->teacher);
-    project->name = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", project->name);
-    project->code = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", project->code);
-    project->startDate = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", project->startDate);
-    project->endDate = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", project->endDate);
+    fscanf(fp, "%d\n", &project->id);
+    project->teacher = inputStringFromFile(fp);
+    project->name = inputStringFromFile(fp);
+    project->code = inputStringFromFile(fp);
+    project->startDate = inputStringFromFile(fp);
+    project->endDate = inputStringFromFile(fp);
     int size;
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
         Student *stu = createStudent();
-        fscanf(fp, "%d", &stu->id);
-        stu->name = (char *) malloc(DEFAULT_BUFFER_SIZE);
-        fscanf(fp, "%s", stu->name);
+        fscanf(fp, "%d\n", &stu->id);
+        stu->name = inputStringFromFile(fp);
         insertObj(project->authors, stu);
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
         Pairif *pairif = newPairif(0,0);
-        fscanf(fp, "%d", &pairif->i);
-        fscanf(fp, "%f", &pairif->f);
+        fscanf(fp, "%d\n", &pairif->i);
+        fscanf(fp, "%f\n", &pairif->f);
         insertObj(project->awards, pairif);
     }
     return project;

@@ -24,7 +24,7 @@ Paper *createPaper() {
     return paper;
 }
 
-char *paperToString(const Paper *paper) { // TODO: 重复代码
+char *paperToString(const Paper *paper) { // 与prizeToString类似
     char *str = (char *) malloc(512);
     char *authorsAndAwards = (char *) malloc(DEFAULT_BUFFER_SIZE);
     *authorsAndAwards = '\0';
@@ -113,63 +113,53 @@ void destroyPaperMembers(Paper *paper) {
         free(stu);
     }
     destroyList(paper->corrAuthors);
-    destroyList(paper->awards);//TODO: free Pairif
+    destroyList(paper->awards);
 }
 
 Paper *readPaper(FILE *fp) {
     Paper *paper = createPaper();
-    fscanf(fp, "%d", &paper->id);
-    paper->title = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", paper->title);
-    paper->journalName = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", paper->journalName);
-    paper->publishDate = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", paper->publishDate);
-    paper->level = (char *) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", paper->level);
+    fscanf(fp, "%d\n", &paper->id);
+    paper->title = inputStringFromFile(fp);
+    paper->journalName = inputStringFromFile(fp);
+    paper->publishDate = inputStringFromFile(fp);
+    paper->level = inputStringFromFile(fp);
     int len;
-    fscanf(fp, "%d", &len);
+    fscanf(fp, "%d\n", &len);
     if(len > 0){
-        paper->volume = (char *) malloc(len + 1);
-        fscanf(fp, "%s", paper->volume);
+        paper->volume = inputStringFromFile(fp);
     }
-    fscanf(fp, "%d", &len);
+    fscanf(fp, "%d\n", &len);
     if(len > 0){
-        paper->issue = (char *) malloc(len + 1);
-        fscanf(fp, "%s", paper->issue);
+        paper->issue = inputStringFromFile(fp);
     }
-    fscanf(fp, "%d", &len);
+    fscanf(fp, "%d\n", &len);
     if(len > 0){
-        paper->paperId = (char *) malloc(len + 1);
-        fscanf(fp, "%s", paper->paperId);
+        paper->paperId = inputStringFromFile(fp);
     }
-    fscanf(fp, "%d", &len);
+    fscanf(fp, "%d\n", &len);
     if(len > 0){
-        paper->page = (char *) malloc(len + 1);
-        fscanf(fp, "%s", paper->page);
+        paper->page = inputStringFromFile(fp);
     }
     int size;
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
         Student *stu = createStudent();
-        fscanf(fp, "%d", &stu->id);
-        stu->name = (char *) malloc(DEFAULT_BUFFER_SIZE);
-        fscanf(fp, "%s", stu->name);
+        fscanf(fp, "%d\n", &stu->id);
+        stu->name = inputStringFromFile(fp);
         insertObj(paper->authors, stu);
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
         Student *stu = createStudent();
-        fscanf(fp, "%d", &stu->id);
-        stu->name = (char *) malloc(DEFAULT_BUFFER_SIZE);
-        fscanf(fp, "%s", stu->name);
+        fscanf(fp, "%d\n", &stu->id);
+        stu->name = inputStringFromFile(fp);
         insertObj(paper->corrAuthors, stu);
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
         Pairif *pairif = newPairif(0, 0);
-        fscanf(fp, "%d", &pairif->i);
-        fscanf(fp, "%f", &pairif->f);
+        fscanf(fp, "%d\n", &pairif->i);
+        fscanf(fp, "%f\n", &pairif->f);
         insertObj(paper->awards, pairif);
     }
     return paper;

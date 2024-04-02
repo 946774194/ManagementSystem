@@ -16,6 +16,7 @@ static char tms[6][112] ={"  _                                                  
                 "  \\__\\___/  |_| |_| |_|\\__,_|_| |_|\\__,_|\\__, |\\___|_| |_| |_|\\___|_| |_|\\__| |___/\\__, |___/\\__\\___|_| |_| |_|\0",
                 "                                         |___/                                     |___/\0"
 };
+
 static char bool[6][56];
 
 static void show(){
@@ -45,4 +46,5 @@ extern void showWelcomeScreen() {
         printf("%s\n", tms[i]);
     }
     usleep(1500000);
+    memset(bool, 0, sizeof(bool));
 }

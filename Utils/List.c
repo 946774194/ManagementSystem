@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "List.h"
 
-List *createList() {
+List *createList() { // 创建一个空的List
     List *list = (List *)malloc(sizeof(List));
     list->head = (Node *)malloc(sizeof(Node));
     list->head->pre = list->head->next = list->head;
@@ -9,7 +9,7 @@ List *createList() {
     return list;
 }
 
-void append(List *list, void *obj) {
+void append(List *list, void *obj) { // 在List的末尾添加一个元素
     Node *node = (Node *)malloc(sizeof(Node));
     node->obj = obj;
     node->pre = list->head->pre;
@@ -19,7 +19,7 @@ void append(List *list, void *obj) {
     list->size++;
 }
 
-void delete(List *list, int index) {
+void delete(List *list, int index) { // 删除List中的第index个元素
     if (index < 0 || index >= list->size) {
         return;
     }
@@ -34,7 +34,7 @@ void delete(List *list, int index) {
     list->size--;
 }
 
-void *get(const List *list, int index) {
+void *get(const List *list, int index) { // 获取List中的第index个元素
     if (index < 0 || index >= list->size) {
         return NULL;
     }
@@ -45,10 +45,10 @@ void *get(const List *list, int index) {
     return node->obj;
 }
 
-void sort(const List *list, int (*cmp)(const void *, const void *)) {
+void sort(const List *list, int (*cmp)(const void *, const void *)) { // 对List中的元素进行排序
     for (Node *i = list->head->next; i != list->head; i = i->next) {
         for (Node *j = i->next; j != list->head; j = j->next) {
-            if (cmp(i->obj, j->obj) > 0) {
+            if (cmp(i->obj, j->obj) > 0) { // 交换
                 void *temp = i->obj;
                 i->obj = j->obj;
                 j->obj = temp;
@@ -57,7 +57,7 @@ void sort(const List *list, int (*cmp)(const void *, const void *)) {
     }
 }
 
-void destroyList(List *list) { // TODO: 追究obj的释放
+void destroyList(List *list) { // 销毁List
     Node *node = list->head->next;
     while (node != list->head) {
         Node *temp = node;

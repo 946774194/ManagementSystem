@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "./../include/inc.h"
-#include "./../Service/Service.h"
 #include "./../Controller/Controller.h"
 
 extern void testLogin() {

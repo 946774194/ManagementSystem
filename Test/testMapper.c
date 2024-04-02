@@ -2,7 +2,7 @@
 #include "./../include/inc.h"
 #include "./../Mapper/Mapper.h"
 
-extern void testMapper(){
+extern void testMapper(){ // 测试数据层
     printf("Test Mapper start\n");
     Student *stu1 = createStudent();
     stu1->id = 1;

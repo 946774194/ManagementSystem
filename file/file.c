@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <io.h>
 #include "file.h"
 #include "./../Utils/List.h"
@@ -11,12 +12,12 @@
 #include "./../poco/Project.h"
 #include "./../Utils/Logger.h"
 
-void initCWD() {
-    if (access("data", 0) == -1) {
+void initCWD() { // 初始化当前工作目录
+    if (access("data", 0) == -1) { // 如果data文件夹不存在
         mkdir("data");
     }
 
-    if (access("data/student.txt", 0) == -1) {
+    if (access("data/student.txt", 0) == -1) { // 如果student文件不存在
         FILE *fp = fopen("data/student.txt", "w");
         fclose(fp);
     }
@@ -57,7 +58,7 @@ void initCWD() {
     }
 }
 
-void readCnt() {
+void readCnt() { // 读取各项记录的下一个id
     FILE *fp = fopen("data/cnt.txt", "r");
     if (fp == NULL) {
         logger.warn("读取cnt文件失败");
@@ -72,7 +73,7 @@ void readCnt() {
     fclose(fp);
 }
 
-void writeCnt() {
+void writeCnt() { // 写入各项记录的下一个id
     FILE *fp = fopen("data/cnt.txt", "w");
     if (fp == NULL) {
         logger.warn("写入cnt文件失败");
@@ -282,4 +283,23 @@ void writeProjectList() {
         writeProject(fp, project);
     }
     fclose(fp);
+}
+
+void readAdminPassword() {
+    if (access("data/adminPassword.txt", 0) == -1) {
+        return;
+    }
+    FILE *fp = fopen("data/adminPassword.txt", "r");
+    if (fp == NULL) {
+        logger.warn("读取adminPassword文件失败");
+        return;
+    }
+    char *password = (char *)malloc(DEFAULT_BUFFER_SIZE);
+    password[0] = '\0';
+    fscanf(fp, "%s", password);
+    if (strlen(password) > 0) {
+        AdminPassword = password;
+    } else {
+        free(password);
+    }
 }

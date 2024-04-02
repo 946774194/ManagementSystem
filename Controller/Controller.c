@@ -18,7 +18,7 @@ void clearInputBuffer() {
 }
 
 char *inputOptionalStrn(char *prompt, int maxSize) {
-    char *buffer = (char *) malloc(maxSize); // 由最终字符串接受者free
+    char *buffer = (char *) malloc(maxSize);
     if (buffer == NULL) return NULL;
 
     system("cls");
@@ -31,9 +31,10 @@ char *inputOptionalStrn(char *prompt, int maxSize) {
 
     size_t len = strlen(buffer);
     if (len > 0 && buffer[len - 1] == '\n') {
-        buffer[len - 1] = '\0';
+        buffer[len - 1] = '\0'; // 去除末尾的换行符
     } else {
-        clearInputBuffer();
+        clearInputBuffer(); // 清空输入缓冲区
+
     }
 
     return buffer;
@@ -43,7 +44,7 @@ char *inputStrn(char *prompt, int maxSize) {
     char *res = NULL;
     do {
         res = inputOptionalStrn(prompt, maxSize);
-    } while (!res || strlen(res) == 0);
+    } while (!res || strlen(res) == 0); // 重复输入直到输入不为空
     return res;
 }
 
@@ -55,7 +56,7 @@ int inputInt(char *prompt) {
     char *str = NULL;
     do {
         str = inputStr(prompt);
-    } while (!isdigit(*str));
+    } while (!isdigit(*str)); // 重复输入直到第一个字符是数字
     int res = strtol(str, NULL, 10);
     free(str);
     return res;
@@ -65,7 +66,7 @@ float inputFloat(char *prompt) {
     char *str = NULL;
     do {
         str = inputStr(prompt);
-    } while (!isdigit(*str));
+    } while (!isdigit(*str)); // 重复输入直到第一个字符是数字
     float res = strtof(str, NULL);
     free(str);
     return res;
@@ -117,7 +118,7 @@ Prize *inputPrize() {
         if (isExist == 1) {
             int stuId = inputInt("请输入学号:");
             Student *s = getStudentByStuId(stuId);
-            if (s && getObjById(prize->authors, s->id)) {
+            if (s && getObjById(prize->authors, s->id)) { // 作者重复
                 printf("学生已添加\n");
                 system("pause");
                 destroyStudentMembers(stu);
@@ -151,10 +152,10 @@ Paper *inputPaper() {
     paper->journalName = inputStr("请输入期刊名:");
     paper->publishDate = inputStr("请输入发表日期:");
     paper->level = inputStr("请输入级别:");
-    paper->volume = inputOptionalStrn("请输入卷号:", DEFAULT_BUFFER_SIZE);
-    paper->issue = inputOptionalStrn("请输入期号:", DEFAULT_BUFFER_SIZE);
-    paper->paperId = inputOptionalStrn("请输入论文号:", DEFAULT_BUFFER_SIZE);
-    paper->page = inputOptionalStrn("请输入页码:", DEFAULT_BUFFER_SIZE);
+    paper->volume = inputOptionalStrn("请输入卷号:（按回车跳过）", DEFAULT_BUFFER_SIZE);
+    paper->issue = inputOptionalStrn("请输入期号:（按回车跳过）", DEFAULT_BUFFER_SIZE);
+    paper->paperId = inputOptionalStrn("请输入论文号:（按回车跳过）", DEFAULT_BUFFER_SIZE);
+    paper->page = inputOptionalStrn("请输入页码:（按回车跳过）", DEFAULT_BUFFER_SIZE);
     int num = inputInt("请输入作者数量:");
     for (int i = 0; i < num; i++) {
         Student *stu = createStudent();
@@ -165,7 +166,7 @@ Paper *inputPaper() {
             int stuId = inputInt("请输入学号:");
             Student *s = getStudentByStuId(stuId);
             if (s && (getObjById(paper->authors, s->id) ||
-                      getObjById(paper->corrAuthors, s->id))) {
+                      getObjById(paper->corrAuthors, s->id))) { // 作者重复
                 printf("学生已添加\n");
                 system("pause");
                 destroyStudentMembers(stu);
@@ -242,7 +243,7 @@ Project *inputProject() {
         if (isExist == 1) {
             int stuId = inputInt("请输入学号:");
             Student *s = getStudentByStuId(stuId);
-            if (s && getObjById(project->authors, s->id)) {
+            if (s && getObjById(project->authors, s->id)) { // 作者重复
                 printf("学生已添加\n");
                 system("pause");
                 destroyStudentMembers(stu);
@@ -382,6 +383,12 @@ void UpdateStudentByStuId() {
         return;
     }
     Student *newStu = inputStudent();
+    if (getStudentByStuId(stu->stuId)) {
+        printf("学号已存在\n");
+        logger.info("结束增加学生，学号已存在，stuId: %d", stu->stuId);
+        system("pause");
+        return;
+    }
     newStu->id = stu->id;
     updateStudent(newStu);
 }
@@ -396,6 +403,12 @@ void UpdateStudentByName() {
             break;
         case 1: {
             Student *newStu = inputStudent();
+            if (getStudentByStuId(newStu->stuId)) {
+                printf("学号已存在\n");
+                logger.info("结束增加学生，学号已存在，stuId: %d", newStu->stuId);
+                system("pause");
+                return;
+            }
             newStu->id = ((Student *) list->head->next->obj)->id;
             updateStudent(newStu);
             break;
@@ -416,6 +429,12 @@ void UpdateStudentByName() {
                 return;
             }
             Student *newStu = inputStudent();
+            if (getStudentByStuId(newStu->stuId)) {
+                printf("学号已存在\n");
+                logger.info("结束增加学生，学号已存在，stuId: %d", newStu->stuId);
+                system("pause");
+                return;
+            }
             newStu->id = stu->id;
             updateStudent(newStu);
             destroyList(list);
@@ -442,6 +461,7 @@ void GetStudentByStuId() {
     if (stu == NULL) {
         printf("学号不存在\n");
         logger.info("结束查询学生，学号不存在，stuId: %d", stuId);
+        system("pause");
         return;
     }
     showStudent(stu);
@@ -467,7 +487,6 @@ void GetStudentByName() {
             break;
         default:
             sort(list, cmpStuIdAsc);
-            return;
     }
     for (Node *node = list->head->next; node != list->head; node = node->next) {
         Student *stu = (Student *) node->obj;
@@ -1104,7 +1123,7 @@ void Get() {
     }
 }
 
-void StatAnalyze() {
+void StatAnalyze() { // 统计分析
     int op = inputInt("【1】计算单个学生GPA\n【2】计算所有学生GPA\n【3】统计一门课的成绩分布\n");
     switch (op) {
         case 1: {
@@ -1260,7 +1279,7 @@ void start() {
         if (permission == 0) {
             showWelcomeScreen();
             login();
-        } else if (permission == 1) {
+        } else if (permission == 1) { // 学生
             int op = inputInt("【1】查询\n【2】统计分析\n【3】修改密码\n【4】注销\n");
             switch (op) {
                 case 1:
@@ -1278,7 +1297,7 @@ void start() {
                 default:
                     break;
             }
-        } else if (permission == 2) {
+        } else if (permission == 2) { // 管理员
             int op = inputInt("【1】新增\n【2】删除\n【3】修改\n【4】查询\n【5】统计分析\n【6】保存\n【7】注销");
             switch (op) {
                 case 1:
@@ -1309,7 +1328,7 @@ void start() {
     }
 }
 
-void Get4Student() {
+void Get4Student() { // 学生的查询
     int op = inputInt("【1】查询个人信息\n【2】查询个人成绩\n【3】查询个人奖项\n【4】查询个人论文\n【5】查询个人项目\n");
     switch (op) {
         case 1: {

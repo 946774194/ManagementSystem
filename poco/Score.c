@@ -30,11 +30,11 @@ void showScore(const Score *score) {
 
 Score *readScore(FILE *fp) {
     Score *score = createScore();
-    fscanf(fp, "%d", &score->id);
-    fscanf(fp, "%d", &score->stuId);
-    fscanf(fp, "%d", &score->courseId);
-    fscanf(fp, "%d", &score->score);
-    fscanf(fp, "%f", &score->point);
+    fscanf(fp, "%d\n", &score->id);
+    fscanf(fp, "%d\n", &score->stuId);
+    fscanf(fp, "%d\n", &score->courseId);
+    fscanf(fp, "%d\n", &score->score);
+    fscanf(fp, "%f\n", &score->point);
     return score;
 }
 

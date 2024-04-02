@@ -1,4 +1,5 @@
 #pragma once
+#include "./../Utils/List.h"
 
 void initCWD();
 
@@ -29,3 +30,5 @@ void writePaperList();
 void readProjectList();
 
 void writeProjectList();
+
+void readAdminPassword();

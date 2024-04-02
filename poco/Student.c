@@ -18,8 +18,8 @@ Student *createStudent(){
     return stu;
 }
 
-char *studentToString(const Student *stu){
-    char *str = (char *)malloc(512); // 由调用者free
+char *studentToString(const Student *stu){ // 生成字符串
+    char *str = (char *)malloc(512);
     sprintf(str, "id: %d\n学号: %d\n姓名: %s\n专业: %s\n"
                  "成绩记录数: %d\n获奖记录数: %d\n论文记录数: %d\n项目记录数: %d\n",
             stu->id, stu->stuId, stu->name, stu->subject,
@@ -39,49 +39,46 @@ void destroyStudentMembers(Student *stu){
     }
     free(stu->name);
     free(stu->subject);
-    destroyList(stu->scoreList);// TODO: destroyIntList()
+    destroyList(stu->scoreList);
     destroyList(stu->prizeList);
     destroyList(stu->paperList);
     destroyList(stu->projectList);
 }
 
-Student *readStudent(FILE *fp){// 由destroyStudentMembers()free
+Student *readStudent(FILE *fp){
     Student *stu = createStudent();
-    fscanf(fp, "%d", &stu->id);
-    fscanf(fp, "%d", &stu->stuId);
-    int len;// TODO:
-    fscanf(fp, "%d", &len);
+    fscanf(fp, "%d\n", &stu->id);
+    fscanf(fp, "%d\n", &stu->stuId);
+    int len;
+    fscanf(fp, "%d\n", &len);
     if(len > 0){
-        stu->pwd = (char *)malloc(len + 1);
-        fscanf(fp, "%s", stu->pwd);
+        stu->pwd = inputStringFromFile(fp);
     }
-    stu->name = (char *)malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", stu->name);
-    stu->subject = (char *)malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", stu->subject);
+    stu->name = stu->pwd = inputStringFromFile(fp);
+    stu->subject = stu->pwd = inputStringFromFile(fp);
     int size;
     int *p = (int *)malloc(sizeof(int));
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size); // 读取对象的记录数，下同
     for (int i = 0; i < size; i++) {
-        fscanf(fp, "%d", p);
+        fscanf(fp, "%d\n", p); // 读取一个对象的id，下同
         append(stu->scoreList, p);
         p = (int *)malloc(sizeof(int));
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
-        fscanf(fp, "%d", p);
+        fscanf(fp, "%d\n", p);
         append(stu->prizeList, p);
         p = (int *)malloc(sizeof(int));
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
-        fscanf(fp, "%d", p);
+        fscanf(fp, "%d\n", p);
         append(stu->paperList, p);
         p = (int *)malloc(sizeof(int));
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++) {
-        fscanf(fp, "%d", p);
+        fscanf(fp, "%d\n", p);
         append(stu->projectList, p);
         p = (int *)malloc(sizeof(int));
     }
@@ -92,7 +89,7 @@ void writeStudent(FILE *fp, const Student *stu){
     fprintf(fp, "%d\n", stu->id);
     fprintf(fp, "%d\n", stu->stuId);
     if(stu->pwd != NULL){
-        fprintf(fp, "%d\n", (int)strlen(stu->pwd));
+        fprintf(fp, "%d\n", (int)strlen(stu->pwd)); // 写入可选字符串时先写入字符串长度
         fprintf(fp, "%s\n", stu->pwd);
     }else{
         fprintf(fp, "0\n");
@@ -101,7 +98,7 @@ void writeStudent(FILE *fp, const Student *stu){
     fprintf(fp, "%s\n", stu->subject);
     fprintf(fp, "%d\n", stu->scoreList->size);
     for (Node *node = stu->scoreList->head->next; node != stu->scoreList->head; node = node->next) {
-        fprintf(fp, "%d\n", *(int*)node->obj);
+        fprintf(fp, "%d\n", *(int*)node->obj); // 保存对象的id，下同
     }
     fprintf(fp, "%d\n", stu->prizeList->size);
     for (Node *node = stu->prizeList->head->next; node != stu->prizeList->head; node = node->next) {

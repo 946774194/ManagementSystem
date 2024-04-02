@@ -22,20 +22,20 @@ char *prizeToString(const Prize *prize){
     char *str = (char *)malloc(512);
     char *authorsAndAwards = (char *)malloc(DEFAULT_BUFFER_SIZE);
     *authorsAndAwards = '\0';
-    char *p = authorsAndAwards;
+    char *p = authorsAndAwards; // 作者和加分的字符串
     for (int i = 0; i < prize->authors->size; i++){
         Student *stu = (Student *)get(prize->authors, i);
         if(prize->isOrdered == 1) {
-            sprintf(p, "%d ", i + 1);
+            sprintf(p, "%d ", i + 1); // 有序的话加上序号
             p += strlen(p);
         }
         sprintf(p, "%s", stu->name);
         p += strlen(p);
-        if(getObjById(prize->awards, stu->id) != NULL){
+        if(getObjById(prize->awards, stu->id) != NULL){ // 如果有加分
             sprintf(p, " +%.2f", getF((Pairif *)getObjById(prize->awards, stu->id)));
             p += strlen(p);
         }
-        if (i != prize->authors->size - 1){
+        if (i != prize->authors->size - 1){ // 不是最后一个作者
             sprintf(p, ", ");
             p += strlen(p);
         }
@@ -64,35 +64,30 @@ void destroyPrizeMembers(Prize *prize){
         free(stu);
     }
     destroyList(prize->authors);
-    destroyList(prize->awards);//TODO: free Pairif
+    destroyList(prize->awards);
 }
 
 Prize *readPrize(FILE *fp){
     Prize *prize = createPrize();
-    fscanf(fp, "%d", &prize->id);
-    prize->name = (char*) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", prize->name);
-    prize->org = (char*) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", prize->org);
-    prize->level = (char*) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", prize->level);
-    prize->date = (char*) malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", prize->date);
-    fscanf(fp, "%d", &prize->isOrdered);
+    fscanf(fp, "%d\n", &prize->id);
+    prize->name = inputStringFromFile(fp);
+    prize->org = inputStringFromFile(fp);
+    prize->level = inputStringFromFile(fp);
+    prize->date = inputStringFromFile(fp);
+    fscanf(fp, "%d\n", &prize->isOrdered);
     int size;
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++){
         Student *stu = createStudent();
-        fscanf(fp, "%d", &stu->id);
-        stu->name = (char*) malloc(DEFAULT_BUFFER_SIZE);
-        fscanf(fp, "%s", stu->name);
+        fscanf(fp, "%d\n", &stu->id);
+        stu->name = inputStringFromFile(fp);
         insertObj(prize->authors, stu);
     }
-    fscanf(fp, "%d", &size);
+    fscanf(fp, "%d\n", &size);
     for (int i = 0; i < size; i++){
         Pairif *pairif = newPairif(0, 0);
-        fscanf(fp, "%d", &pairif->i);
-        fscanf(fp, "%f", &pairif->f);
+        fscanf(fp, "%d\n", &pairif->i);
+        fscanf(fp, "%f\n", &pairif->f);
         insertObj(prize->awards, pairif);
     }
     return prize;

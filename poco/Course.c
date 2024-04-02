@@ -38,18 +38,14 @@ void destroyCourseMembers(Course *course) {
 
 Course *readCourse(FILE *fp) {
     Course *course = createCourse();
-    fscanf(fp, "%d", &course->id);
-    course->name = (char *)malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", course->name);
-    course->subject = (char *)malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", course->subject);
-    course->teacher = (char *)malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", course->teacher);
-    course->term = (char *)malloc(DEFAULT_BUFFER_SIZE);
-    fscanf(fp, "%s", course->term);
-    fscanf(fp, "%d", &course->isReq);
-    fscanf(fp, "%f", &course->credit);
-    fscanf(fp, "%d", &course->period);
+    fscanf(fp, "%d\n", &course->id);
+    course->name = inputStringFromFile(fp);
+    course->subject = inputStringFromFile(fp);
+    course->teacher = inputStringFromFile(fp);
+    course->term = inputStringFromFile(fp);
+    fscanf(fp, "%d\n", &course->isReq);
+    fscanf(fp, "%f\n", &course->credit);
+    fscanf(fp, "%d\n", &course->period);
     return course;
 }
 

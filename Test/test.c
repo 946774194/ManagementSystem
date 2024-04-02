@@ -23,7 +23,7 @@ extern void testAll() {
 //    testControllerPrize();
 //    testControllerPaper();
 //    testControllerProject();
-//    testControllerCRUD();
-    testLogin();
+    testControllerCRUD();
+//    testLogin();
     printf("Test end\n");
 }

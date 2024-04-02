@@ -5,7 +5,7 @@
 #include "./../Utils/Logger.h"
 const int DEFAULT_BUFFER_SIZE = 64;
 
-
+// 全局变量的定义
 int isModified = 0;
 int permission = 0;
 List *const StudentList;
@@ -21,7 +21,7 @@ int prizeCnt;
 int paperCnt;
 int projectCnt;
 const char AdminUsername[] = "admin";
-const char AdminPassword[] = "admin";
+char *AdminPassword = "admin";
 int nowLoginUsername;
 Logger logger;
 
@@ -38,7 +38,7 @@ void init() {
 
     permission = 0;
 
-    initCWD();
+    initCWD(); // 初始化当前工作目录
 
     readCnt();
     readStudentList();
@@ -47,5 +47,6 @@ void init() {
     readPrizeList();
     readPaperList();
     readProjectList();
+    readAdminPassword();
     logger.info("初始化完成");
 }

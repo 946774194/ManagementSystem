@@ -25,7 +25,6 @@ void insertStudent(Student *stu) {
 }
 
 void deleteStudentById(int id) {
-    // TODO: 级联删除
     Student *stu = getStudentById(id);
     for (Node *node = stu->scoreList->head->next; node != stu->scoreList->head; node = node->next) {
         deleteScoreById(*(int *)node->obj);
@@ -69,18 +68,20 @@ Student *getStudentById(int id) {
     return stu;
 }
 
-void updateStudent(Student *stu) {
-//    deleteObjById(StudentList, stu->id);
-//    insertObj(StudentList, stu); // 保持id不变
+void updateStudent(Student *stu) { // 为了保持id不变
     Student *old = getStudentById(stu->id);
     old->stuId = stu->stuId;
     free(old->name);
     old->name = stu->name;
     free(old->subject);
     old->subject = stu->subject;
+    destroyList(stu->prizeList);
     free(stu->prizeList);
+    destroyList(stu->paperList);
     free(stu->paperList);
+    destroyList(stu->scoreList);
     free(stu->scoreList);
+    destroyList(stu->projectList);
     free(stu->projectList);
     free(stu);
     logger.info("成功更新学生, id: %d", old->id);
@@ -93,11 +94,11 @@ void insertCourse(Course *course) {
 }
 
 void deleteCourseById(int id) {
-    for (Node *node = ScoreList->head->next; node != ScoreList->head;) {
+    for (Node *node = ScoreList->head->next; node != ScoreList->head;) { // 删除该课程的所有成绩
         Score *score = (Score *)node->obj;
         if (score->courseId == id) {
             deleteScoreById(score->id);
-            node = ScoreList->head->next;
+            node = ScoreList->head->next; // 低效，但简单
         }else {
             node = node->next;
         }
@@ -124,14 +125,14 @@ void insertScore(Score *score, int ownerId) {
     score->id = scoreCnt++;
     int *p = (int *)malloc(sizeof(int));
     *p = score->id;
-    insertObj(getStudentById(ownerId)->scoreList, p);
+    insertObj(getStudentById(ownerId)->scoreList, p); // 把Score的id插入到学生的scoreList里
     insertObj(ScoreList, score);
     logger.info("成功增加成绩, id: %d", score->id);
 }
 
 void deleteScoreById(int id) {
-    List *list = getStudentByStuId(getScoreById(id)->stuId)->scoreList;// 删除学生的scoreList里的id
-    deleteObjById(list, id);
+    List *list = getStudentByStuId(getScoreById(id)->stuId)->scoreList;
+    deleteObjById(list, id);// 删除学生的scoreList里的id
     deleteObjById(ScoreList, id);
     logger.info("成功删除成绩, id: %d", id);
 }
@@ -151,9 +152,9 @@ void updateScore(Score *score) {
 void insertPrize(Prize *prize) {
     prize->id = prizeCnt++;
     List *authors = prize->authors;
-    for (Node *node = authors->head->next; node != authors->head; node = node->next) {
+    for (Node *node = authors->head->next; node != authors->head; node = node->next) { // 把Prize的id插入到学生的prizeList里
         Student *stu = (Student *)node->obj;
-        if (stu->id != -1) {// 在list里的学生
+        if (stu->id != -1) {// 在系统里的学生
             int *p = (int *)malloc(sizeof(int));
             *p = prize->id;
             Student *owner = getStudentById(stu->id);
@@ -193,7 +194,7 @@ void updatePrize(Prize *prize) {
 void insertPaper(Paper *paper) {
     paper->id = paperCnt++;
     List *authors = paper->authors;
-    for (Node *node = authors->head->next; node != authors->head; node = node->next) {
+    for (Node *node = authors->head->next; node != authors->head; node = node->next) { // 把Prize的id插入到学生的prizeList里
         Student *stu = (Student *)node->obj;
         if (stu->id != -1) {// 在list里的学生
             int *p = (int *)malloc(sizeof(int));
@@ -292,18 +293,18 @@ void updateProject(Project *project) {
     logger.info("成功更新项目, id: %d", project->id);
 }
 
-float calculateGPA(Student *stu) {
-    float numerator = 0, denominator = 0;
+float calculateGPA(Student *stu) { // 计算学生的GPA，只计算必修，不包括加分
+    float numerator = 0, denominator = 0; // 分子 分母
     for (Node *node = stu->scoreList->head->next; node != stu->scoreList->head; node = node->next) {
         Score *score = getScoreById(*(int *)node->obj);
         Course *course = getCourseById(score->courseId);
-        if(course->isReq != 1){
+        if(course->isReq != 1){ // 不是必修
             continue;
         }
-        numerator +=  score->point * course->credit;
-        denominator += course->credit;
+        numerator +=  score->point * course->credit; // 绩点 * 学分
+        denominator += course->credit; // 学分
     }
-    if(denominator < 0.01f){
+    if(denominator < 1e-6f){
         return 0.0f;
     }
     return numerator / denominator;
@@ -311,10 +312,10 @@ float calculateGPA(Student *stu) {
 
 float calculateTotalGPA(Student *stu) {
     float prizeMax = 0, paperMax = 0, projectMax = 0;
-    for (Node *node = stu->prizeList->head->next; node != stu->prizeList->head; node = node->next) {
+    for (Node *node = stu->prizeList->head->next; node != stu->prizeList->head; node = node->next) { // 计算最高奖项
         Prize *prize = getPrizeById(*(int *)node->obj);
         Pairif *pairif = (Pairif *)getObjById(prize->awards, stu->id);
-        if(pairif != NULL){
+        if(pairif != NULL){ // 有加分
             prizeMax = getF(pairif) > prizeMax ? getF(pairif) : prizeMax;
         }
     }
@@ -332,10 +333,10 @@ float calculateTotalGPA(Student *stu) {
             projectMax = getF(pairif) > projectMax ? getF(pairif) : projectMax;
         }
     }
-    float totalAwards = prizeMax + paperMax > projectMax ? paperMax : projectMax;
-    totalAwards = totalAwards > 0.4f ? 0.4f : totalAwards;
+    float totalAwards = prizeMax + paperMax > projectMax ? paperMax : projectMax; // 论文和项目取最高，再加上奖项
+    totalAwards = totalAwards > 0.4f ? 0.4f : totalAwards; // 加分最高0.4
     float total = calculateGPA(stu) + totalAwards;
-    return total > 4.0f ? 4.0f : total;
+    return total > 4.0f ? 4.0f : total; // GPA最高4.0
 }
 
 List *calculateAllGPA() {
@@ -349,7 +350,7 @@ List *calculateAllGPA() {
     return list;
 }
 
-void analyzeCourseDistribution(int id) {
+void analyzeCourseDistribution(int id) { // 分析课程成绩分布
     int *cnt = (int *)malloc(sizeof(int) * 12);
     int line[] = {0, 60, 64, 67, 70, 74, 77, 80, 84, 87, 90, 95, 101};
     for (int i = 0; i < 12; i++) {
